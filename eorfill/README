@@ -4,5 +4,5 @@ Compiling:
 - Type make at the command line. 
 
 Still needs work to handle more special cases. Yet, for an 8-bit computer's polygon filler, 
-this simple routine is already impressively fast.
+this simple routine is already quite impressively fast.
 
