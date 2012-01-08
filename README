@@ -1,16 +1,18 @@
-Demo effects for the 8-bit MSX home computer (1983).
+Demo effects and routines for the 8-bit MSX home computer (1983).
 
 Directories:
+***********
 
 eorfill/	A test EOR polygon filler and a line routine
 
 Required tools and libraries:  
+****************************
 
-- sdcc and as-z80 Z80 C Compiler and Assembler. http://sdcc.sourceforge.net/
+- "sdcc" and "as-z80" Z80 C Compiler and Assembler. http://sdcc.sourceforge.net/
 
-- hex2bin hexadecimal to binary converter. http://hex2bin.sourceforge.net/
+- "hex2bin" hexadecimal to binary converter. http://hex2bin.sourceforge.net/
 
-- The Lieves!Tuore msxlib.c and msxlib.h. http://www.kameli.net/lt/atsaas.zip
+- The Lieves!Tuore "msxlib.c" and "msxlib.h". http://www.kameli.net/lt/atsaas.zip
 
 - Various library files by Konami Man and Avelino: 
 http://msx.atlantes.org/sdcc_msx/crt0msx_msxdos_advanced.s
@@ -20,16 +22,15 @@ http://msx.atlantes.org/sdcc_msx/interrupt.h
 http://msx.atlantes.org/sdcc_msx/ioport.s
 http://msx.atlantes.org/sdcc_msx/ioport.h
 
-Compile with these instructions in: 
+Compile the libraries with the instructions in: 
 
 http://msx.atlantes.org/index_en.html
 
-For example, as-z80 -o putchar.o putchar.s
+For example, "as-z80 -o putchar.o putchar.s"
 
 Optional tools and libraries:
+****************************
 
-- wrdsk for writing emulator disk files. http://www.kameli.net/lt/msxdisk_fixed.zip
+- "wrdsk" for writing emulator disk files. http://www.kameli.net/lt/msxdisk_fixed.zip
 
-- command.com and msxdos.sys of the MSX-DOS for running. 
-
-
+- "command.com" and "msxdos.sys" of the MSX-DOS for running. 
