@@ -3,6 +3,6 @@ An EOR polygon filler for MSX by Antti Silvast, 2011, 2012.
 Compiling:
 - Type make at the command line. 
 
-Still needs work to handle more special cases. Yet, for an 8-bit polygon filler, 
-this simply routine is already impressively fast.
+Still needs work to handle more special cases. Yet, for an 8-bit computer's polygon filler, 
+this simple routine is already impressively fast.
 
