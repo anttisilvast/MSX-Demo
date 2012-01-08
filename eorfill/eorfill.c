@@ -17,7 +17,7 @@
 // the preset sin table
 #include "sin_table.inc"
 
-// this array stores the values sin/5 (divisions are slow on Z80). 
+// this array stores the values sin/5 (divisions do not exist on the Z80 processor and thus slow). 
 signed char sini5[256];
 
 // constants for the keyboard reader
@@ -265,7 +265,7 @@ void line(unsigned char * dest, int x1, int y1, int x2, int y2, unsigned char co
 		col		a color mask (e.g. 0xFF - mask nothing, 85 - mask every 2nd pixel)
 
    This is a modified Bresenham routine that only draws a pixel when the X coordinate has changed.
-   It does this for the EOR filler.
+   As will be seen soon, this arrangement is for the EOR filler.
 */
 
 	unsigned char i;
@@ -504,9 +504,9 @@ int main(char **argv,int argc)
 		/* Wait for the screen blank (when the video beam is up) */
 		waitVB();
 
-		/* Refresh to screen */
+		/* Refresh to screen... 
 		
-		/* First, just the lines:*/
+		First, just the lines:*/
 		vdp_address(0x0);
 		vdp_bigcopy(line_offscreen_buffer,64);
 		/* Then, with EOR fill: */
@@ -515,7 +515,7 @@ int main(char **argv,int argc)
 		nof_frames++;
     	}
 
-	/* Return to normal, print the Frames Per Second (FPS).*/
+	/* Return to the MSX-DOS, print the Frames Per Second (FPS).*/
 
     	uninstall_isr();
     	screen(0);
