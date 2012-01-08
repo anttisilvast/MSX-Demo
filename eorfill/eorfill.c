@@ -17,7 +17,7 @@
 // the preset sin table
 #include "sin_table.inc"
 
-// this array stores the values sin/5 (divisions do not exist on the Z80 processor and thus slow). 
+// this array stores the values sin/5 (divisions do not exist on the Z80 processor and are thus slow). 
 signed char sini5[256];
 
 // constants for the keyboard reader
