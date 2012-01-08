@@ -436,7 +436,7 @@ int main(char **argv,int argc)
 {
     	char c;
     	int k,i,j,x1,y1,x2,y2;
-    	char base1, base2,plus,angles;
+    	char base1,base2,plus,angles;
     	int nof_frames;
     	int fps;
 	
