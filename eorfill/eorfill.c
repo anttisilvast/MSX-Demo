@@ -264,7 +264,7 @@ void line(unsigned char * dest, int x1, int y1, int x2, int y2, unsigned char co
 		x2,y2		coordinates of the other end
 		col		a color mask (e.g. 0xFF - mask nothing, 85 - mask every 2nd pixel)
 
-   This is a modified Bresenham routine that only draws a pixel when the X coordinate has changed.
+   This is a modified Bresenham's line algorithm that only draws a pixel when the X coordinate has changed.
    As will be seen soon, this arrangement is for the EOR filler.
 */
 
