@@ -1,12 +1,10 @@
 Demo effects for the 8-bit MSX home computer (1983).
 
 Directories:
-***********
 
 eorfill/	A test EOR polygon filler and a line routine
 
 Required tools and libraries:  
-****************************
 
 - sdcc and as-z80 Z80 C Compiler and Assembler. http://sdcc.sourceforge.net/
 
@@ -28,8 +26,7 @@ http://msx.atlantes.org/index_en.html
 
 For example, as-z80 -o putchar.o putchar.s
 
-Optional:
-********
+Optional tools and libraries:
 
 - wrdsk for writing emulator disk files. http://www.kameli.net/lt/msxdisk_fixed.zip
 
