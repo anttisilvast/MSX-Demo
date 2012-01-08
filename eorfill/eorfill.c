@@ -268,7 +268,6 @@ void line(unsigned char * dest, int x1, int y1, int x2, int y2, unsigned char co
    As will be seen soon, this arrangement is for the EOR filler.
 */
 
-	unsigned char i;
 	int t;
 	
 	// arrange so that x1 is always smaller than x2
@@ -436,7 +435,7 @@ void my_isr(void) interrupt {
 int main(char **argv,int argc)
 {
     	char c;
-    	int k,i,j,x,y,xl,yl,yh,xh,xr,yr,x1,y1,x2,y2;
+    	int k,i,j,x1,y1,x2,y2;
     	char base1, base2,plus,angles;
     	int nof_frames;
     	int fps;
