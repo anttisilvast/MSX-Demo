@@ -260,7 +260,7 @@ static unsigned char color;
 void line(unsigned char * dest, int x1, int y1, int x2, int y2, unsigned char col) {
 /* A line routine
    INPUT:	dest		the buffer to draw the line
-		x1,y1		coordinates of the other end
+		x1,y1		coordinates of the one end
 		x2,y2		coordinates of the other end
 		col		a color mask (e.g. 0xFF - mask nothing, 85 - mask every 2nd pixel)
 
