@@ -1,4 +1,6 @@
-Demo effects and routines for the 8-bit MSX home computer (1983).
+Demo effects and routines for the 8-bit MSX home computer (1983). I did a lot of programming with this computer in the late 1990s and early 2000s, and this page is an effort to make some of the programming routines available. 
+
+While never intended for generating sophisticated real-time graphics and audio, retro computers (such as the MSX or the Sinclair QL) are an interesting platform for exploring old hardware and software and their standards. In addition, through their simplicity and low processing power, these computers may also illustrate the challenges and benefits of real-time programming in the more contemporary contexts. 
 
 Directories:
 ***********
