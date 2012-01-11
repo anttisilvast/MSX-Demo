@@ -5,8 +5,8 @@ While never intended for generating sophisticated real-time graphics and audio, 
 Directories:
 ***********
 
-eorfill/	A test EOR polygon filler and a line routine
-putpixel/ A direct-to-screen putpixel routine and test
+eorfill/    A test EOR polygon filler and a line routine
+putpixel/   A direct-to-screen putpixel routine and test
 
 Required tools and libraries:  
 ****************************
