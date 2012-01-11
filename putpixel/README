@@ -1,0 +1,9 @@
+A direct-to-screen putpixel routine and test for MSX by Antti Silvast, 2012.
+
+Compiling:
+- Type make at the command line. 
+
+I did not quite expect it, but this is an efficient way to draw to the screen. There is no 
+flicker while the code is not entirely in Assembler either. Manages around 30 pixels 
+(draw+erase) per frame.
+
