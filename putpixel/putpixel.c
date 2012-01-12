@@ -1,4 +1,3 @@
-
 /* 
 
  A direct-to-screen putpixel routine and test for MSX by Antti Silvast, 2012.
@@ -212,8 +211,7 @@ void put_pixel(unsigned char x, unsigned char y) {
         ld l,a
         
         // write address
-	ld a,e
-	out (0x99),a
+	out (c),e
 	ld a,d
 	or #0x40
 	out (0x99),a
