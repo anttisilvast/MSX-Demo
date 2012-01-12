@@ -326,6 +326,8 @@ void erase_byte(unsigned char x, unsigned char y) {
 	ld a,d
 	or #0x40
 	out (c),a
+
+	// erase the byte
 	sub a
 	out (0x98),a
 
@@ -457,7 +459,7 @@ int main(char **argv,int argc)
 			X=sini[(base1-DELAY) & 0xFF]+128+tilt+master_frame-DELAY;
 			Y=sini2[(base2-DELAY) & 0xFF]+96;
 		
-			// Erase a whole byte (8 pixels) rather than a pixel. It is faster and does not affect the 
+			// Erase a whole byte (8 pixels) rather than a pixel. It is faster and seems not affect the 
 			// effect too much. 
 			erase_byte(X,Y);
 			//erase_pixel(X,Y);
