@@ -55,21 +55,21 @@ void set_name_table(int type) {
 		_asm
 		
 		ld c,#3
-		31$:
+		1$:
 		ld b,#0
 		ld d,#8
-		1$:
-		ld e,#32
 		2$:
+		ld e,#32
+		3$:
 		ld a,b
 		out (0x98),a
 		inc b
 		dec e
-		jp nz,2$
+		jp nz,3$
 		dec d
-		jp nz,1$
+		jp nz,2$
 		dec c
-		jp nz,31$
+		jp nz,1$
 		_endasm;
 		
 	} else {
@@ -77,27 +77,27 @@ void set_name_table(int type) {
 		_asm
 		// Set the pseudolinear top-to bottom state
 		ld d,#3
-		311$:
+		4$:
 
 		ld b,#0 // B: character number
 		ld c,#8
-		2031$:
+		5$:
 		push bc
 		ld e,#32
-		202$:
+		6$:
 		ld a,b
 		out (0x98),a
 		add a,#8
 		ld b,a
 		dec e
-		jp nz,202$
+		jp nz,6$
 
 		pop bc
 		inc b
 		dec c
-		jp nz,2031$
+		jp nz,5$
 		dec d
-		jp nz,311$
+		jp nz,4$
 		_endasm;
 		
 	}
@@ -177,31 +177,31 @@ void put_pixel(unsigned char x, unsigned char y) {
 	ld l,4(ix) // L=x
     	ld h,5(ix) // H=y
 
+	ld c,#0x99 // video memory address port
+
 	// draw to address dest = (y & 0x7 + x & 0xF8) + (y >> 3)*256
 	ld a,l
 	and #0xF8
-	ld c,a 	
+	ld e,a 	
 	ld a,h
 	and #0x7
-	add a,c
-	ld c,a	
-	ld b,h
-	srl b
-	srl b
-	srl b ; BC = dest
+	add a,e
+	ld e,a	
+	ld d,h
+	srl d
+	srl d
+	srl d ; DE = dest
 	
 	// store destination for possible future pixel erasing
-	ld (_draw_dest),bc		
+	//ld (_draw_dest),de		
 
 	// read what is already on the screen
 	
 	// set read address
-	ld a,c
-	out (0x99),a
-	ld a,b
-	out (0x99),a
+	out (c),e
+	out (c),d
 	in a,(0x98)
-	ld e,a // read
+	ld b,a // read
 
 	// determine the new pixel mask
 	ld a,l
@@ -212,18 +212,18 @@ void put_pixel(unsigned char x, unsigned char y) {
         ld l,a
         
         // write address
-	ld a,c
+	ld a,e
 	out (0x99),a
-	ld a,b
+	ld a,d
 	or #0x40
 	out (0x99),a
 
 	// read mask
 	ld a,(hl)
 	// also store the mask for possible future pixel erasing
-	ld (_draw_mask),a
+	//ld (_draw_mask),a
 	// put pixel
-	or e
+	or b
 	out (0x98),a
 	_endasm;
 }
@@ -242,31 +242,31 @@ void erase_pixel(unsigned char x, unsigned char y) {
 	ld l,4(ix) // L=x
     	ld h,5(ix) // H=y
 
+	ld c,#0x99 // address post
+
 	// draw to address dest = (y & 0x7 + x & 0xF8) + (y >> 3)*256
 	ld a,l
 	and #0xF8
-	ld c,a 	
+	ld e,a 	
 	ld a,h
 	and #0x7
-	add a,c
-	ld c,a	
-	ld b,h
-	srl b
-	srl b
-	srl b ; BC = dest
+	add a,e
+	ld e,a	
+	ld d,h
+	srl d
+	srl d
+	srl d ; DE = dest
 	
 	// store destination for future pixel erasing
-	ld (_draw_dest),bc		
+	// ld (_draw_dest),de		
 
 	// read what is already on the screen
 	
 	// set read address
-	ld a,c
-	out (0x99),a
-	ld a,b
-	out (0x99),a
+	out (c),e
+	out (c),d
 	in a,(0x98)
-	ld e,a // read
+	ld b,a // read
 
 	// determine the new pixel mask
 	ld a,l
@@ -277,19 +277,58 @@ void erase_pixel(unsigned char x, unsigned char y) {
         ld l,a
         
         // write address
-	ld a,c
-	out (0x99),a
-	ld a,b
+	out (c),e
+	ld a,d
 	or #0x40
-	out (0x99),a
+	out (c),a
 
 	// read mask
 	ld a,(hl)
 	// also store the mask for future pixel erasing
-	ld (_draw_mask),a
+	// ld (_draw_mask),a
 	// erase pixel
 	cpl // negate to erase
-	and e
+	and b
+	out (0x98),a
+
+	_endasm;
+}
+
+void erase_byte(unsigned char x, unsigned char y) {
+/* Erase a byte directly from the MSX pattern table. No clipping. 
+	INPUT: 	x,y		coordinates
+
+	OUTPUT:	draw_dest	the destination offset (for future reference)
+		draw_mask	the pixel mask (for future reference)
+*/
+
+	x,y;
+	_asm
+	// load parameters
+	ld l,4(ix) // L=x
+    	ld h,5(ix) // H=y
+
+	ld c,#0x99 // address post
+
+	// draw to address dest = (y & 0x7 + x & 0xF8) + (y >> 3)*256
+	ld a,l
+	and #0xF8
+	ld e,a 	
+	ld a,h
+	and #0x7
+	add a,e
+	ld e,a	
+	ld d,h
+	srl d
+	srl d
+	srl d ; DE = dest
+	
+        // write address
+	out (c),e
+	ld a,d
+	or #0x40
+	out (c),a
+	sub a
 	out (0x98),a
 
 	_endasm;
@@ -348,7 +387,7 @@ void my_isr(void) interrupt {
 
 
 /* the number of plots */
-#define N 25
+#define N 34
 
 /* the delay for the tail of the plots */
 #define DELAY 8
@@ -359,8 +398,9 @@ int main(char **argv,int argc)
     	int nof_frames;
     	int fps;
 	int i;
+	unsigned char j;
 
-	int base1,base2;
+	unsigned char base1,base2;
 	int X,Y;
 	char tilt;
     	printf("Putpixel tests by Antti Silvast (antti.silvast@iki.fi), 2012. Use Q to quit.");
@@ -401,12 +441,13 @@ int main(char **argv,int argc)
 		/* Wait for the screen blank (when the video beam is up) */
 		waitVB();
 		
+
 		/* Draw some sinus patterns with the put_pixel routine */	
+
 		tilt=0;
 		base1=master_frame;
 		base2=master_frame+64;
-		for (i=0; i<N; i++) {
-
+		for (j=0; j<N; j++) {
 			// The draw part. Note that the figure also scrolls and is tilted to the left. 
 			X=sini[base1 & 0xFF]+128+tilt+master_frame;
 			Y=sini2[base2 & 0xFF]+96;
@@ -417,11 +458,12 @@ int main(char **argv,int argc)
 			// The larger the DELAY, the longer the trail the pixels leave. 
 			X=sini[(base1-DELAY) & 0xFF]+128+tilt+master_frame-DELAY;
 			Y=sini2[(base2-DELAY) & 0xFF]+96;
-			erase_pixel(X,Y);
+			erase_byte(X,Y);
+			//erase_pixel(X,Y);
 
-			base1+=16;
-			base2+=17;
-			tilt+=7;
+			base1+=116;
+			base2+=7;
+			tilt+=8;
 		}
 
 		nof_frames++;
