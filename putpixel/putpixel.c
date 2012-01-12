@@ -298,8 +298,6 @@ void erase_byte(unsigned char x, unsigned char y) {
 /* Erase a byte directly from the MSX pattern table. No clipping. 
 	INPUT: 	x,y		coordinates
 
-	OUTPUT:	draw_dest	the destination offset (for future reference)
-		draw_mask	the pixel mask (for future reference)
 */
 
 	x,y;
@@ -458,6 +456,9 @@ int main(char **argv,int argc)
 			// The larger the DELAY, the longer the trail the pixels leave. 
 			X=sini[(base1-DELAY) & 0xFF]+128+tilt+master_frame-DELAY;
 			Y=sini2[(base2-DELAY) & 0xFF]+96;
+		
+			// Erase a whole byte (8 pixels) rather than a pixel. It is faster and does not affect the 
+			// effect too much. 
 			erase_byte(X,Y);
 			//erase_pixel(X,Y);
 
