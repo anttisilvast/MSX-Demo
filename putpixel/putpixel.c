@@ -235,7 +235,6 @@ void erase_pixel(unsigned char x, unsigned char y) {
 	OUTPUT:	draw_dest	the destination offset (for future reference)
 		draw_mask	the pixel mask (for future reference)
 */
-
 	x,y;
 	_asm
 	// load parameters
@@ -299,7 +298,6 @@ void erase_byte(unsigned char x, unsigned char y) {
 	INPUT: 	x,y		coordinates
 
 */
-
 	x,y;
 	_asm
 	// load parameters
