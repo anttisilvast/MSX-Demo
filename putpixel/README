@@ -3,5 +3,5 @@ A direct-to-screen putpixel routine and test for MSX by Antti Silvast, 2012.
 Compiling:
 - Type make at the command line. 
 
-Although rarely used by our demos, sometimes putting separate pixels directly to the screen can be an efficient way to draw effects. Manages around 30 pixels (draw+erase) per frame.
+Although rarely used by our demos, sometimes putting separate pixels directly to the screen can be an efficient way to draw effects. Manages around 35 pixels (draw+erase) per frame.
 
