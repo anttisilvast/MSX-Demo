@@ -7,8 +7,8 @@ An implementation of the Bresenham line algorithm (http://en.wikipedia.org/wiki/
 
 Issues and limitations: 
 
-- Due to the calculation of the Bresenham error term in an 8-bit register, the lines can only be around 64 pixels wide/high. Obviously longer lines are necessary. One idea here is to calculate the error term (2*err in the Wikipedia link) on a 16-bit register while everything else (dx and dy, absolute values range 0...256) can be safely kept on 8-bit registers. 
+- Due to the calculation of the Bresenham error term in an 8-bit register, the lines can only be around 64 pixels wide/high. Obviously, longer lines are necessary in many cases. One idea here is to calculate the error term (2*err in the Wikipedia link) on a 16-bit register while everything else (dx and dy, absolute values range 0...256) can be kept in 8-bit registers. 
 
-- On an MSX, screen erasing is a major efficiency factor and is not optimized here. As the shapes only figure on restricted regions, the screen erasing should clear these parts only as well. 
+- On an MSX, screen erasing is a major efficiency factor and is not optimized here. As the shapes only figure on restricted regions, the screen erasing should clear only these parts as well. 
 
 - The clipping of the line coordinates is not implemented. Maybe this clipping could use a delta calculation: that is to say, it would increase or decrease the line's x and y coordinates according to the deltas of the line so that the visible part of the line is drawn.  
