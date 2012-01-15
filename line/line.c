@@ -227,7 +227,7 @@ y2_lt_y1:
 y_cmp_done:
 	
 	// calculate the Bresenham error term err=dx-dy
-	// and the line length len=max(dx,dy)+1
+	// and the line length len=max(dx,dy)
 	ld a,b
 	sub c
 	jp c,dy_lt_dx
@@ -332,7 +332,7 @@ x_same:
 	
 	// Y Bresenham error term check
 
-	// if e2<dx, then the Y coordinate grows
+	// if e2<dx, then the Y coordinate grows (or decreases if y1>y2)
 	sub b // A = e2-dx
  	jp p,y_same
 y_plus:
