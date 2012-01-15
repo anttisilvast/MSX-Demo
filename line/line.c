@@ -542,7 +542,7 @@ int main(char **argv,int argc)
 			pos=nof_frames % 3;
 			erase_step(pos*256,768,8);
 		}
-		/* other screen cleaning options: */
+		/* other screen clearing options: */
 		/* clear the screen in two intertwined parts */
 		//pos=nof_frames & 0x1;
 		//erase_step(pos*256,512,12);	
