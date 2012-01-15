@@ -475,6 +475,36 @@ fill_256:
 	_endasm;
 }
 
+void draw_polygon(char X, char Y, char angles, char plus, char rot) {
+/* draws a closed line polygon.
+   INPUT:	X,Y		screen coordinates of the polygon
+		angles		the angles of the polygon
+		plus		the step between the ends
+		rot		the starting rotation (0..255)
+
+*/
+	unsigned char j;
+	unsigned char base1,base2,base3,base4;
+	unsigned char x1,y1,x2,y2;
+
+	base1=rot+64;
+	base2=rot;
+	base3=rot+plus+64;
+	base4=rot+plus;
+	for (j=0; j<angles; j++) {				
+		x1=sini2[base1]+X;
+		y1=sini2[base2]+Y;
+		x2=sini2[base3]+X;
+		y2=sini2[base4]+Y;
+		line(x1,y1,x2,y2,1);
+		base1+=plus;
+		base2+=plus;
+		base3+=plus;
+		base4+=plus;
+	}
+
+}
+
 void my_isr(void) interrupt { 
 	/* The interruption handler, does nothing but increments the timer.*/
 	master_frame++;
@@ -489,11 +519,8 @@ int main(char **argv,int argc)
     	char c;
     	int nof_frames;
     	int fps;
-	int i;
-	unsigned char j;
+	int i,X,Y;
 	int pos;
-	unsigned char base1;
-	int x1,y1,x2,y2,X,Y;
     	printf("Line tests by Antti Silvast (antti.silvast@iki.fi), 2012. Use Q to quit.");
 
 	// calculate the other sin table (sin/4)
@@ -553,43 +580,14 @@ int main(char **argv,int argc)
 		/* draw three test polygons */
 
 		// a square
-		#define PLUS 64
 		X=sini2[(master_frame*2+64) & 0xFF]*2+128; Y=sini2[(master_frame) & 0xFF]*2+96;
-		base1=master_frame;		
-		for (j=0; j<4; j++) {				
-				x1=sini2[(base1+64) & 0xFF]+X;
-				y1=sini2[(base1) & 0xFF]+Y;
-				x2=sini2[(base1+PLUS+64) & 0xFF]+X;
-				y2=sini2[(base1+PLUS) & 0xFF]+Y;
-				line(x1,y1,x2,y2,1);
-				base1+=PLUS;
-		}
-
+		draw_polygon(X,Y,4,64,master_frame);
 		// a pentagon
-		#define PLUS2 51
 		X=sini2[(master_frame*2+64) & 0xFF]*2+128; Y=sini2[(master_frame*3+80) & 0xFF]*2+96;
-		base1=master_frame;		
-		for (j=0; j<5; j++) {				
-				x1=sini2[(base1+64) & 0xFF]+X;
-				y1=sini2[(base1) & 0xFF]+Y;
-				x2=sini2[(base1+PLUS2+64) & 0xFF]+X;
-				y2=sini2[(base1+PLUS2) & 0xFF]+Y;
-				line(x1,y1,x2,y2,1);
-				base1+=PLUS2;
-		}
-
-		// a hegaon
-		#define PLUS3 42
+		draw_polygon(X,Y,5,51,master_frame);
+		// a hexagon
 		X=sini2[(master_frame*2+4) & 0xFF]*2+128; Y=sini2[(master_frame*3+8) & 0xFF]*2+96;
-		base1=master_frame;		
-		for (j=0; j<6; j++) {				
-				x1=sini2[(base1+64) & 0xFF]+X;
-				y1=sini2[(base1) & 0xFF]+Y;
-				x2=sini2[(base1+PLUS3+64) & 0xFF]+X;
-				y2=sini2[(base1+PLUS3) & 0xFF]+Y;
-				line(x1,y1,x2,y2,1);
-				base1+=PLUS3;
-		}
+		draw_polygon(X,Y,6,42,master_frame);
 
 		nof_frames++;
     	}
