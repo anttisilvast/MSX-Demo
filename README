@@ -5,6 +5,7 @@ While never intended for generating sophisticated real-time graphics and audio, 
 Directories:
 ***********
 
+line/	    A direct-to-screen Bresenham line algorithm and test
 eorfill/    A test EOR polygon filler and a line routine
 putpixel/   A direct-to-screen putpixel routine and test
 
