@@ -490,11 +490,10 @@ int main(char **argv,int argc)
     	int nof_frames;
     	int fps;
 	int i;
-	unsigned char j,k;
+	unsigned char j;
 	int pos;
-	unsigned char base1,base2;
-	int x1,y1,x2,y2,X,Y,XO,YO;
-	char tilt;
+	unsigned char base1;
+	int x1,y1,x2,y2,X,Y;
     	printf("Line tests by Antti Silvast (antti.silvast@iki.fi), 2012. Use Q to quit.");
 
 	// calculate the other sin table (sin/4)
