@@ -1,0 +1,11 @@
+A direct-to-screen line draw and test for MSX by Antti Silvast, 2012.
+
+Compiling:
+- Type make at the command line. 
+
+An implementation of the Bresenham line algorithm (http://en.wikipedia.org/wiki/Bresenham's_line_algorithm). All the calculations are in the Z80 registers. Works good and gives a lot of flexibility over where the lines can be (as opposed to drawing to and refreshing an off-screen buffer).
+
+Issues and limitations: 
+- Due to the calculation of the Bresenham error term in an 8-bit register, the lines can only be around 64 pixels wide/high. The line should be able to be around the screen. One proposal is to calculate the error term (2*err in the Wikipedia link) on a 16-bit register and keep everything else (dx and dy) on 8-bit registers. 
+- On an MSX, screen erasing is a major efficiency factor and is not optimized here. As the shapes only figure in restricted regions, the screen erasing should clear these parts only as well. 
+- The coordinates' clipping is not implemented. This clipping might use a delta calculation: that is, increase the x and y coordinates according to the deltas of the line so that it is on the visible screen. 
