@@ -3,9 +3,12 @@ A direct-to-screen line draw and test for MSX by Antti Silvast, 2012.
 Compiling:
 - Type make at the command line. 
 
-An implementation of the Bresenham line algorithm (http://en.wikipedia.org/wiki/Bresenham's_line_algorithm). All the calculations are in the Z80 registers. Works good and gives a lot of flexibility over where the lines can be (as opposed to drawing to and refreshing an off-screen buffer).
+An implementation of the Bresenham line algorithm (http://en.wikipedia.org/wiki/Bresenham's_line_algorithm). All the calculations are done in the Z80 registers. Relatively fast and grants a lot of flexibility over where the lines can be (as opposed to drawing to an off-screen buffer).
 
 Issues and limitations: 
-- Due to the calculation of the Bresenham error term in an 8-bit register, the lines can only be around 64 pixels wide/high. The line should be able to be around the screen. One proposal is to calculate the error term (2*err in the Wikipedia link) on a 16-bit register and keep everything else (dx and dy) on 8-bit registers. 
-- On an MSX, screen erasing is a major efficiency factor and is not optimized here. As the shapes only figure in restricted regions, the screen erasing should clear these parts only as well. 
-- The coordinates' clipping is not implemented. This clipping might use a delta calculation: that is, increase the x and y coordinates according to the deltas of the line so that it is on the visible screen. 
+
+- Due to the calculation of the Bresenham error term in an 8-bit register, the lines can only be around 64 pixels wide/high. Obviously longer lines are necessary. One idea here is to calculate the error term (2*err in the Wikipedia link) on a 16-bit register while everything else (dx and dy, absolute values range 0...256) can be safely kept on 8-bit registers. 
+
+- On an MSX, screen erasing is a major efficiency factor and is not optimized here. As the shapes only figure on restricted regions, the screen erasing should clear these parts only as well. 
+
+- The clipping of the line coordinates is not implemented. Maybe this clipping could use a delta calculation: that is to say, it would increase or decrease the line's x and y coordinates according to the deltas of the line so that the visible part of the line is drawn.  
