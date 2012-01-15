@@ -191,7 +191,7 @@ x2_lt_x1:
 	// store A = dx = abs(x2-x1)
 	ld b,a // B=dx
 
-	// calculate and store dy=abs(y2-Y1)
+	// calculate and store dy=abs(y2-y1)
 	ld a,d
 	sub h // A = y2-y1
 	jp nc,y2_lt_y1
