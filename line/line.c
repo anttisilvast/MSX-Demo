@@ -272,9 +272,12 @@ bres_init_done:
 	// read what is already on the screen on this spot
 
 	// set video memory read address
+	di
 	out (c),e
 	out (c),d
 	in a,(0x98)
+	ei
+
 	ld b,a // B = screen content
 
 	// determine the mask for the new pixel
@@ -287,10 +290,12 @@ bres_init_done:
 	ld l,a // L = pixel mask
         
         // set video memory write address
+	di
 	out (c),e
 	ld a,d
 	or #0x40
 	out (0x99),a
+	ei
 
 	exx // go back to main registers
 
@@ -387,6 +392,7 @@ update_pixel:
 	exx
 	// write the bitmap to the video memory
 	ld a,b
+	di
 	out (0x98),a	
 
 	// define new read address
@@ -401,6 +407,8 @@ update_pixel:
 	ld a,d
 	or #0x40
 	out (0x99),a
+	ei
+
 	exx
 skip_update:
 
