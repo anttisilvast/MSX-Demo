@@ -424,7 +424,7 @@ void erase_page(int start_address) {
 	or #0x40
 	ld h,a // write address bit set
 
-	ld c,#0x99 // C = MSX video memory address prot
+	ld c,#0x99 // C = MSX video memory address port
 
 	ld e,#24 // E = number of character-rows
 repeat_erase_page:	
