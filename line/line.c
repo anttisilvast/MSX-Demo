@@ -144,7 +144,7 @@ inner_loop:
 // powers of two (2^7...2^0)
 unsigned char pow2[8]={128,64,32,16,8,4,2,1};
 
-void line_fast(unsigned char x1, unsigned char y1, unsigned char x2, unsigned char y2, unsigned char col) {
+void line(unsigned char x1, unsigned char y1, unsigned char x2, unsigned char y2, unsigned char col) {
 /* Draws a line directly into the MSX pattern table. No clipping. 
    Uses an 8-bit register to calculate the Bresenham error term. 
    Delta_x (x2-x1) and Delta_y (y2-y1) are max. 64!
@@ -541,7 +541,7 @@ void draw_polygon(unsigned char X, unsigned char Y, unsigned char angles, unsign
 		y1=sini2[ind2]+Y;
 		x2=sini2[ind3]+X;
 		y2=sini2[ind4]+Y;
-		line_fast(x1,y1,x2,y2,1);
+		line(x1,y1,x2,y2,1);
 		ind1+=plus;
 		ind2+=plus;
 		ind3+=plus;
