@@ -20,7 +20,7 @@ Issues and limitations:
 
 - On an MSX, screen erasing is a major efficiency factor. The line algorithm can draw to the entire screen, but unfortunately, its erasing will cause a lot of flicker. Thus, this version of the line routine uses a hidden offscreen buffer which I implement by switching between two name tables between frames. This also limits the effective buffer to 128x192 (or any other area that is half of 256x192). 
 
-- As only half of the screen is visible, a border needs to be drawn. This border has to be blank. However, all the characters are in use by the routine (either by the on-screen or off-screen buffer respectively). I erase any draws to the border character which is 0 of each three pattern tables in SCREEN 2. Lines that intersect these areas ((0,0)-(7,7)...(0,64)-(7,51)...(0,128-7,135)) shall be erased! 
+- As only half of the screen is visible, a border needs to be drawn. This border has to be blank. However, all the characters are in use by the routine (either by the on-screen or off-screen buffer respectively). I erase any draws to the border character which is 0 of each three pattern tables in SCREEN 2. Lines that intersect these three areas ((0,0)-(7,7); (0,64)-(7,51); (0,128)-(7,135)) shall be erased for that part! 
 
 - The clipping of the line coordinates is not implemented. Maybe this clipping could use a delta calculation: that is to say, it would increase or decrease the line's x and y coordinates according to the deltas of the line so that the visible part of the line is always drawn.  
 
