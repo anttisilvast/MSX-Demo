@@ -272,11 +272,11 @@ bres_init_done:
 	// read what is already on the screen on this spot
 
 	// set video memory read address
-	di
+	di // Disable Interrupts to be safe
 	out (c),e
 	out (c),d
 	in a,(0x98)
-	ei
+	ei // Enable Interrupts
 
 	ld b,a // B = screen content
 
