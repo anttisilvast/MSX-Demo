@@ -35,75 +35,84 @@ void Dummy_function()
 
 }
 
-static int name_table_type;
-void set_name_table(int type) {
+
+void set_name_table() {
 /* Set the name table
-   INPUT: 	type	type of the name table (1=left to right, 2=top to bottom)
 
    Name tables are the "letters" of the MSX video memory, 
    which tell where each graphics character (0..256) lies on the screen. 
+
+  The routine sets up two name tables to be used as alternating hidden buffers. 
 */
-	// if name table already the same as requested, do nothing
-	if (type==name_table_type) return;
-	name_table_type=type;
+
+	_asm
+
+	ld l,#2
+
+	// the first page name table
+
+	ld a,#00
+	out (0x99),a
+	ld a,#0x18+0x40	
+	out (0x99),a
 	
-	vdp_address(0x1800); // MSX nametable is at the address 0x1800
+	ld c,#0
 
-	if (type==1) {
-		// Set the normal MSX name table left to right
-		_asm
-		
-		ld c,#3
-		1$:
-		ld b,#0
-		ld d,#8
-		2$:
-		ld e,#32
-		3$:
-		ld a,b
-		out (0x98),a
-		inc b
-		dec e
-		jp nz,3$
-		dec d
-		jp nz,2$
-		dec c
-		jp nz,1$
-		_endasm;
-		
-	} else {
-		
-		_asm
-		// Set the pseudolinear top-to bottom state
-		ld d,#3
-		4$:
+make_name_table:
+	ld h,c // H stores the "blank" border character
 
-		ld b,#0 // B: character number
-		ld c,#8
-		5$:
-		push bc
-		ld e,#32
-		6$:
-		ld a,b
-		out (0x98),a
-		add a,#8
-		ld b,a
-		dec e
-		jp nz,6$
+	ld b,#24
+1$:
+	ld a,h
+	out (0x98),a
+	out (0x98),a
+	out (0x98),a
+	out (0x98),a
+	out (0x98),a
+	out (0x98),a
+	out (0x98),a
+	out (0x98),a
 
-		pop bc
-		inc b
-		dec c
-		jp nz,5$
-		dec d
-		jp nz,4$
-		_endasm;
+	ld a,c
+	ld d,#16
+2$:	
+	out (0x98),a
+	inc a
+	dec d
+	jp nz,2$
 		
-	}
+	add a,#16
+	ld c,a
+
+	ld a,h
+	out (0x98),a
+	out (0x98),a
+	out (0x98),a
+	out (0x98),a
+	out (0x98),a
+	out (0x98),a
+	out (0x98),a
+	out (0x98),a
+
+	dec b
+	jp nz,1$
+
+	// the second page name table
+	ld a,#00
+	out (0x99),a
+	ld a,#0x1C+0x40	
+	out (0x99),a
+
+	ld c,#16
+
+	dec l
+	jp nz,make_name_table
+	
+	_endasm;
 }
 
 void set_color_table(void) {
-/* Sets up the MSX color table to a preset mask, sliding from white to red. */
+/* Sets up the MSX color table to a preset mask. */
 
 	vdp_address(0x2000); // this is where the color table is
 _asm
@@ -112,12 +121,11 @@ _asm
 outer_loop:
 		ld e,#32
 inner_loop:
-		ld a,#0xF1 
+		ld a,#0xC1 // green on black
 		out (0x98),a
 		out (0x98),a
 		out (0x98),a
 		out (0x98),a
-		ld a,#0xE1 
 		out (0x98),a
 		out (0x98),a
 		out (0x98),a
@@ -136,8 +144,11 @@ inner_loop:
 // powers of two (2^7...2^0)
 unsigned char pow2[8]={128,64,32,16,8,4,2,1};
 
-void line(unsigned char x1, unsigned char y1, unsigned char x2, unsigned char y2, unsigned char col) {
+void line_fast(unsigned char x1, unsigned char y1, unsigned char x2, unsigned char y2, unsigned char col) {
 /* Draws a line directly into the MSX pattern table. No clipping. 
+   Uses an 8-bit register to calculate the Bresenham error term. 
+   Delta_x (x2-x1) and Delta_y (y2-y1) are max. 64!
+
 	INPUT: 	x1,y1		start coordinates
 		x2,y2		end coordinates
 		col		color (1=draw, 0=erase)
@@ -163,7 +174,7 @@ void line(unsigned char x1, unsigned char y1, unsigned char x2, unsigned char y2
 	ld d,7(ix) // D=y2
 	ld c,8(ix) // C=col
 
-	// apply the color by self-modifying the main loop code
+	// set the color by self-modifying the main loop code
 	ld a,c
 	cp #1
 	jp z,color_draw
@@ -289,8 +300,8 @@ line_main_loop:
 	exx
 	ld a,l
 putpixel_code:
-	nop // if col=0: CPL	
-	or b // if col=0: AND B
+	nop // for col==1. if col==0: CPL	
+	or b // for col==1. if col==0: AND B
 	ld b,a
 	exx
 
@@ -399,36 +410,32 @@ skip_update:
 	_endasm;
 }
 
-void erase_step(int start_address, int step, unsigned char n) {
-/* Erases the screen in chunks of 256 bytes for speed gain.  
+void erase_page(int start_address) {
+/* Erases the screen in chunks of 128 bytes.  
 	INPUT: 	start_address		start erasing here 
-		step			the interval between the 256 byte chunks
-		n			the number of erases to make
 */
-	start_address,step,n;
+	start_address;
 	_asm
 	// load parameters
 	ld l,4(ix) // 
     	ld h,5(ix) // HL=start_address
-	ld e,6(ix) // 
-	ld d,7(ix) // DE=step
-	ld c,8(ix) // C=n
 
 	ld a,h
 	or #0x40
 	ld h,a // write address bit set
 
-repeat_erase:	
-	// define new write address
-	ld a,l
-	out (0x99),a
-	ld a,h
-	out (0x99),a
+	ld c,#0x99 // C = MSX video memory address prot
 
-// erase 256 bytes
+	ld e,#24 // E = number of character-rows
+repeat_erase_page:	
+	// define new write address
+	out (c),l
+	out (c),h
+
+// erase 128 bytes
 	sub a
-	ld b,#8
-fill_256:
+	ld b,#4
+fill_128:
 	out (0x98),a
 	out (0x98),a
 	out (0x98),a
@@ -466,41 +473,79 @@ fill_256:
 	out (0x98),a
 
 	dec b
-	jp nz,fill_256
+	jp nz,fill_128
 	
-	add hl,de // fill the gap
-	dec c
-	jp nz,repeat_erase
+	inc h // skip the gap
+	dec e
+	jp nz,repeat_erase_page
 
 	_endasm;
 }
 
-void draw_polygon(char X, char Y, char angles, char plus, char rot) {
+void erase_first_patterns(int start_address) {
+/* Erases the first character pattern of each part of the video memory 
+
+	INPUT:	start_address		where to start the erasing
+
+*/
+	start_address;
+	_asm
+	// load parameters
+	ld l,4(ix) // 
+    	ld h,5(ix) // HL=start_address
+
+	ld a,h
+	or #0x40
+	ld h,a // write address bit set
+
+	ld c,#0x99
+	ld b,#3
+first_erase_loop:
+	out (c),l
+	out (c),h
+	sub a
+	out (0x98),a
+	out (0x98),a
+	out (0x98),a
+	out (0x98),a
+	out (0x98),a
+	out (0x98),a
+	out (0x98),a
+	out (0x98),a
+	ld a,h
+	add a,#0x08
+	ld h,a
+	dec b
+	jp nz,first_erase_loop
+	_endasm;
+}
+
+void draw_polygon(unsigned char X, unsigned char Y, unsigned char angles, unsigned char plus, unsigned char rot) {
 /* draws a closed line polygon.
    INPUT:	X,Y		screen coordinates of the polygon
 		angles		the angles of the polygon
-		plus		the step between the ends
+		plus		the step between the vertices
 		rot		the starting rotation (0..255)
 
 */
 	unsigned char j;
-	unsigned char base1,base2,base3,base4;
+	unsigned char ind1,ind2,ind3,ind4;
 	unsigned char x1,y1,x2,y2;
 
-	base1=rot+64;
-	base2=rot;
-	base3=rot+plus+64;
-	base4=rot+plus;
+	ind1=rot+64;
+	ind2=rot;
+	ind3=rot+plus+64;
+	ind4=rot+plus;
 	for (j=0; j<angles; j++) {				
-		x1=sini2[base1]+X;
-		y1=sini2[base2]+Y;
-		x2=sini2[base3]+X;
-		y2=sini2[base4]+Y;
-		line(x1,y1,x2,y2,1);
-		base1+=plus;
-		base2+=plus;
-		base3+=plus;
-		base4+=plus;
+		x1=sini2[ind1]+X;
+		y1=sini2[ind2]+Y;
+		x2=sini2[ind3]+X;
+		y2=sini2[ind4]+Y;
+		line_fast(x1,y1,x2,y2,1);
+		ind1+=plus;
+		ind2+=plus;
+		ind3+=plus;
+		ind4+=plus;
 	}
 
 }
@@ -517,10 +562,13 @@ void my_isr(void) interrupt {
 int main(char **argv,int argc)
 {
     	char c;
-    	int nof_frames;
+    	long int nof_frames;
+	int frame_count;
     	int fps;
 	int i,X,Y;
-	int pos;
+	unsigned char frame1,frame2,frame3,ind1,ind2;
+	unsigned char xpos1;
+	unsigned char nt_pos;
     	printf("Line tests by Antti Silvast (antti.silvast@iki.fi), 2012. Use Q to quit.");
 
 	// calculate the other sin table (sin/4)
@@ -541,13 +589,13 @@ int main(char **argv,int argc)
  
 	/* set the name table.*/
 	waitVB();
-	set_name_table(1);
+	set_name_table();
 	
 	/* Set the colors */
 	waitVB();
 	set_color_table();
 	
-	nof_frames=0;
+	nof_frames=frame_count=0;
 
     	while(1) {
 		// reading the keyboard
@@ -557,39 +605,46 @@ int main(char **argv,int argc)
 			break; // user pressed Q
 		}
 		
+		// make the page switch
+		nt_pos = 0x1-frame_count & 0x1;
+		xpos1 = (frame_count & 0x1)*128;
+
+		// set name table position
+		vdp_register(VDP_NAME_T,0x6+nt_pos);
+
+		// erase previous buffer
+		erase_page(xpos1);
+
 		/* Wait for the screen blank (when the video beam is up) */
-		waitVB();
-
-		if ((master_frame % 1000)>=500) {
-			/* erase the whole screen in two big parts */
-			pos=nof_frames & 0x1;
-			erase_step(pos*3072,256,12);
-		} else {
-			/* clear the screen in three intertwined parts */
-			pos=nof_frames % 3;
-			erase_step(pos*256,768,8);
-		}
-		/* other screen clearing options: */
-		/* clear the screen in two intertwined parts */
-		//pos=nof_frames & 0x1;
-		//erase_step(pos*256,512,12);	
-		/* clear the screen in four intertwined parts */
-		//pos=nof_frames & 0x3;
-		//erase_step(pos*256,1024,6);
-
+		// waitVB();
+		
 		/* draw three test polygons */
 
+		frame1=master_frame; 
+		frame2=2*frame1;
+		frame3=3*frame1;
+
 		// a square
-		X=sini2[(master_frame*2+64) & 0xFF]*2+128; Y=sini2[(master_frame) & 0xFF]*2+96;
+		ind1=frame2+64; ind2=frame1;
+		X=xpos1+sini2[ind1]+64; Y=sini2[ind2]*2+96;
 		draw_polygon(X,Y,4,64,master_frame);
 		// a pentagon
-		X=sini2[(master_frame*2+64) & 0xFF]*2+128; Y=sini2[(master_frame*3+80) & 0xFF]*2+96;
+		ind1=frame2+20; ind2=frame3+80;
+		X=xpos1+sini2[ind1]+64; Y=sini2[ind2]*2+96;
 		draw_polygon(X,Y,5,51,master_frame);
 		// a hexagon
-		X=sini2[(master_frame*2+4) & 0xFF]*2+128; Y=sini2[(master_frame*3+8) & 0xFF]*2+96;
-		draw_polygon(X,Y,6,42,master_frame);
+		ind1=frame2+4; ind2=frame3+8;		
+		X=xpos1+sini2[ind1]+64; Y=sini2[ind2]*2+96;
+		draw_polygon(X,Y,6,43,master_frame);
+
+		// we need a "blank" character in the name table
+		// thus, erase the first patterns...
+		// may cause disappearing artefacts because
+		// the lines have already been drawn! 
+		erase_first_patterns(xpos1);
 
 		nof_frames++;
+		frame_count++;
     	}
 
 	/* Return to the MSX-DOS, print the Frames Per Second (FPS).*/
